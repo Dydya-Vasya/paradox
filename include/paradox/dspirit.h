@@ -1,6 +1,18 @@
 #ifndef PARADOX_DSPIRIT_H
 #define PARADOX_DSPIRIT_H
 
+#ifdef _WIN32
+    // Windows DLL support
+    #ifdef PARADOX_DSPIRIT_EXPORTS
+        #define PARADOX_API __declspec(dllexport)
+    #else
+        #define PARADOX_API __declspec(dllimport)
+    #endif
+#else
+    // Linux/macOS - no DLLs
+    #define PARADOX_API
+#endif
+
 #include <iostream>
 #include <string>
 

@@ -200,11 +200,9 @@ Discussions – GitHub Discussions
 Email – Zinovyev.vv@yandex.ru
 
 👨‍💻 Author
-Zinoviev Vasilii – @yourusername
+Zinoviev Vasilii 
 
-LinkedIn: Your Profile
-
-ResearchGate: Your Profile
+LinkedIn: www.linkedin.com/in/vasilii-zinoviev-b355573a2
 
 *Bringing 20+ years of engineering discipline + mathematical research to cutting-edge numerical computing.*
 

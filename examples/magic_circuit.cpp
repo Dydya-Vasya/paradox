@@ -1,4 +1,4 @@
-#include "spirit_float.h"
+#include "dspirit.h"
 #include <iostream>
 #include <iomanip>
 
@@ -13,10 +13,10 @@ int main() {
     std::cout << std::endl;
     
     // Circuit parameters
-    spirit U = spirit(12.0);           // Voltage source, V
-    spirit R1 = spirit(10.0);          // Series resistance, Ohm
-    spirit R2 = spirit(20.0);          // Parallel end resistance, Ohm
-    spirit R3 = spirit::ZERO;          // Ideal conductor (0 Ohm)
+    dspirit U = 12;           // Voltage source, V
+    dspirit R1 = 10;          // Series resistance, Ohm
+    dspirit R2 = 20;          // Parallel end resistance, Ohm
+    dspirit R3 = 0;          // Ideal conductor (0 Ohm)
     
     std::cout << "CIRCUIT PARAMETERS:" << std::endl;
     std::cout << "Voltage source: U = " << U << " V" << std::endl;
@@ -50,8 +50,8 @@ int main() {
     std::cout << "-----------------------------------------------------" << std::endl;
     
     // For parallel connection: 1/R_par = 1/R2 + 1/R3
-    spirit R_par_inv = R2.inverse() + R3.inverse();
-    spirit R_par = R_par_inv.inverse();
+    dspirit R_par_inv = R2.inverse() + R3.inverse();
+    dspirit R_par = R_par_inv.inverse();
     
     std::cout << "1/R_par = 1/R2 + 1/R3 = 1/" << R2 << " + 1/" << R3 << std::endl;
     std::cout << "1/R_par = " << R2.inverse() << " + " << R3.inverse() << std::endl;
@@ -67,7 +67,7 @@ int main() {
     std::cout << "STEP 2: TOTAL CIRCUIT RESISTANCE" << std::endl;
     std::cout << "-------------------------------" << std::endl;
     
-    spirit R_total = R1 + R_par;
+    dspirit R_total = R1 + R_par;
     std::cout << "R_total = R1 + R_par = " << R1 << " + " << R_par << std::endl;
     std::cout << "R_total = " << R_total << " Ohm" << std::endl;
     std::cout << std::endl;
@@ -76,7 +76,7 @@ int main() {
     std::cout << "STEP 3: TOTAL CURRENT IN THE CIRCUIT (BY OHM'S LAW)" << std::endl;
     std::cout << "---------------------------------------------------" << std::endl;
     
-    spirit I_total = U / R_total;
+    dspirit I_total = U / R_total;
     std::cout << "I_total = U / R_total = " << U << " / " << R_total << std::endl;
     std::cout << "I_total = " << I_total << " A" << std::endl;
     std::cout << std::endl;
@@ -85,7 +85,7 @@ int main() {
     std::cout << "STEP 4: VOLTAGE AT POINT A" << std::endl;
     std::cout << "--------------------------" << std::endl;
     
-    spirit U_A = I_total * R_par;
+    dspirit U_A = I_total * R_par;
     std::cout << "U_A = I_total × R_par = " << I_total << " × " << R_par << std::endl;
     std::cout << "U_A = " << U_A << " V" << std::endl;
     
@@ -106,19 +106,19 @@ int main() {
     std::cout << "------------------------------------------" << std::endl;
     
     // Current through R2 (regular resistor)
-    spirit I_R2 = U_A / R2;
+    dspirit I_R2 = U_A / R2;
     std::cout << "Through R2 (20 Ohm):" << std::endl;
     std::cout << "  I_R2 = U_A / R2 = " << U_A << " / " << R2 << std::endl;
     std::cout << "  I_R2 = " << I_R2 << " A" << std::endl;
     
     // Current through R3 (ideal conductor)
-    spirit I_R3 = U_A / R3;
+    dspirit I_R3 = U_A / R3;
     std::cout << "\nThrough R3 (0 Ohm - ideal conductor):" << std::endl;
     std::cout << "  I_R3 = U_A / R3 = " << U_A << " / " << R3 << std::endl;
     std::cout << "  I_R3 = " << I_R3 << " A" << std::endl;
     
     // Check: I_total should equal I_R2 + I_R3
-    spirit I_sum = I_R2 + I_R3;
+    dspirit I_sum = I_R2 + I_R3;
     std::cout << "\nCheck: I_total = I_R2 + I_R3" << std::endl;
     std::cout << "  " << I_total << " = " << I_R2 << " + " << I_R3 << std::endl;
     std::cout << "  " << I_total << " = " << I_sum << std::endl;
@@ -138,9 +138,9 @@ int main() {
     std::cout << std::endl;
     
     // Create representation with explicit level for R3
-    // In reality, R3 = spirit::ZERO already has level -1
+    // In reality, R3 = dspirit::ZERO already has level -1
     // But let's create it explicitly with coefficient 1 at level -1
-    spirit R3_detailed = 0.0f;  // 1 * ε (very small, but not zero)
+    dspirit R3_detailed = 0.0f;  // 1 * ε (very small, but not zero)
     
     std::cout << "Detailed representation of ideal conductor:" << std::endl;
     std::cout << "  R3_detailed = " << R3_detailed << " Ohm" << std::endl;
@@ -148,12 +148,12 @@ int main() {
     std::cout << std::endl;
     
     // Recalculate with R3_detailed
-    spirit R_par_inv_detailed = R2.inverse() + R3_detailed.inverse();
-    spirit R_par_detailed = R_par_inv_detailed.inverse();
-    spirit R_total_detailed = R1 + R_par_detailed;
-    spirit I_total_detailed = U / R_total_detailed;
-    spirit U_A_detailed = I_total_detailed * R_par_detailed;
-    spirit I_R3_detailed = U_A_detailed / R3_detailed;
+    dspirit R_par_inv_detailed = R2.inverse() + R3_detailed.inverse();
+    dspirit R_par_detailed = R_par_inv_detailed.inverse();
+    dspirit R_total_detailed = R1 + R_par_detailed;
+    dspirit I_total_detailed = U / R_total_detailed;
+    dspirit U_A_detailed = I_total_detailed * R_par_detailed;
+    dspirit I_R3_detailed = U_A_detailed / R3_detailed;
     
     std::cout << "Recalculation with detailed representation of R3:" << std::endl;
     std::cout << "  R_par = " << R_par_detailed << " Ohm" << std::endl;
@@ -181,11 +181,11 @@ int main() {
     std::cout << "STEP 7: POWER CALCULATION" << std::endl;
     std::cout << "-------------------------" << std::endl;
     
-    spirit P_R1 = I_total * I_total * R1;
-    spirit P_R2 = I_R2 * I_R2 * R2;
-    spirit P_R3 = I_R3 * I_R3 * R3;
-    spirit P_total = U * I_total;
-    spirit P_sum = P_R1 + P_R2 + P_R3;
+    dspirit P_R1 = I_total * I_total * R1;
+    dspirit P_R2 = I_R2 * I_R2 * R2;
+    dspirit P_R3 = I_R3 * I_R3 * R3;
+    dspirit P_total = U * I_total;
+    dspirit P_sum = P_R1 + P_R2 + P_R3;
     
     std::cout << "Power on R1: P_R1 = I² × R1 = " << P_R1 << " W" << std::endl;
     std::cout << "Power on R2: P_R2 = I_R2² × R2 = " << P_R2 << " W" << std::endl;
@@ -240,12 +240,12 @@ int main() {
     double r3_values[] = {0.001, 0.01, 0.1, 1.0, 10.0, 20.0, 100.0};
     
     for (double r3_val : r3_values) {
-        spirit R3_test(r3_val);
-        spirit R_par_test = spirit::ONE / (R2.inverse() + R3_test.inverse());
-        spirit R_total_test = R1 + R_par_test;
-        spirit I_total_test = U / R_total_test;
-        spirit U_A_test = I_total_test * R_par_test;
-        spirit I_R3_test = U_A_test / R3_test;
+        dspirit R3_test(r3_val);
+        dspirit R_par_test = dspirit::ONE / (R2.inverse() + R3_test.inverse());
+        dspirit R_total_test = R1 + R_par_test;
+        dspirit I_total_test = U / R_total_test;
+        dspirit U_A_test = I_total_test * R_par_test;
+        dspirit I_R3_test = U_A_test / R3_test;
         
         std::cout << std::setw(15) << r3_val 
                   << std::setw(20) << static_cast<double>(I_R3_test)

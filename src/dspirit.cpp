@@ -1,9 +1,16 @@
 #include "paradox/dspirit.h"
+
+#ifdef _WIN32
+#define PARADOX_DSPIRIT_EXPORTS
+#endif
+
 #include <cmath>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <algorithm>
+#include <cctype>
+#include <cstring>  // Добавили для strlen/memcpy
 
 namespace paradox {
 
@@ -287,26 +294,26 @@ public:
     // Создание из строки
     static Impl fromStringSimple(const std::string& s) {
         std::string str = s;
-        str.erase(std::remove_if(str.begin(), str.end(), ::isspace), str.end());
+        
+        str.erase(std::remove_if(str.begin(), str.end(), 
+                  [](unsigned char c) { return std::isspace(c); }), 
+                  str.end());
         
         if (str.empty()) return Impl(0.0);
         
-        // Проверяем специальные значения
-        if (str == "0" || str == "0.0" || str == "0.0") return Impl(0.0);
+        if (str == "0" || str == "0.0") return Impl(0.0);
         if (str == "inf" || str == "Inf" || str == "INF") return Impl(1.0, 1.0);
         if (str == "-inf" || str == "-Inf" || str == "-INF") return Impl(-1.0, 1.0);
-        if (str == "1" || str == "1.0" || str == "1.0") return Impl(1.0);
-        if (str == "-1" || str == "-1.0" || str == "-1.0") return Impl(-1.0);
+        if (str == "1" || str == "1.0") return Impl(1.0);
+        if (str == "-1" || str == "-1.0") return Impl(-1.0);
         
-        // Просто число
         try {
-            double value = std::stof(str);
+            double value = std::stod(str);
             return Impl(value, 0.0);
         } catch (...) {
             throw std::invalid_argument("Cannot parse: " + s);
         }
     }
-
 };
 
  dspirit dspirit::fromLevel(double value, double level) {
