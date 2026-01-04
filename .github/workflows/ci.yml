@@ -3,43 +3,72 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  build-all:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
     
     steps:
     - uses: actions/checkout@v3
     
-    - name: Configure and Build
+    - name: Install Linux dependencies
+      if: matrix.os == 'ubuntu-latest'
       run: |
-        cmake -B build -G "Visual Studio 17 2022" -A x64
-        cmake --build build --config Release
-        echo "✅ Windows build successful"
-        
+        sudo apt-get update
+        sudo apt-get install -y cmake g++ build-essential
+    
+    - name: Configure
+      run: |
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          cmake -B build -G "Visual Studio 17 2022" -A x64
+        else
+          cmake -B build
+        fi
+    
+    - name: Build
+      run: cmake --build build --config Release
+    
     - name: Find and Run Test
       run: |
-        # Ищем исполняемый файл
-        $exe = Get-ChildItem -Path build -Recurse -Filter "test_example.exe" | Select-Object -First 1
-        if ($exe) {
-          Write-Host "Found executable: $($exe.FullName)"
-          & $exe.FullName
-          Write-Host "✅ Test executed successfully"
-        } else {
-          Write-Host "⚠️ Test executable not found, but build succeeded"
-        }
-      shell: pwsh
-      
-  build-linux:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y cmake g++
-      
-    - name: Build and Test
-      run: |
-        cmake -B build
-        cmake --build build
-        ./build/test_example
-        echo "✅ Linux build and test successful"
+        cd build
+        
+        # Для всех платформ ищем исполняемый файл
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          # Windows - ищем .exe
+          echo "=== Windows: Looking for executables ==="
+          find . -name "*.exe" -type f | head -10
+          
+          # Пробуем разные варианты
+          if [ -f "./test_example.exe" ]; then
+            echo "✅ Found: ./test_example.exe"
+            ./test_example.exe
+          elif [ -f "./Release/test_example.exe" ]; then
+            echo "✅ Found: ./Release/test_example.exe"
+            ./Release/test_example.exe
+          elif [ -f "./example_basic.exe" ]; then
+            echo "✅ Found: ./example_basic.exe"
+            ./example_basic.exe
+          else
+            echo "❌ No test executable found on Windows"
+            exit 1
+          fi
+          
+        else
+          # Linux/macOS
+          echo "=== ${{ matrix.os }}: Looking for executables ==="
+          find . -type f -executable ! -name "*.so" ! -name "*.dylib" ! -name "*.a" | head -10
+          
+          if [ -f "./test_example" ]; then
+            echo "✅ Found: ./test_example"
+            ./test_example
+          elif [ -f "./example_basic" ]; then
+            echo "✅ Found: ./example_basic"
+            ./example_basic
+          else
+            echo "❌ No test executable found on ${{ matrix.os }}"
+            exit 1
+          fi
+        fi
+        
+        echo "✅ Test completed successfully on ${{ matrix.os }}"

@@ -1,49 +1,47 @@
 cmake_minimum_required(VERSION 3.14)
 project(paradox-dspirit VERSION 1.0.0 LANGUAGES CXX)
 
-# Настройки для Windows
-if(WIN32)
-    add_compile_options(/W4 /WX /MP)
-    add_definitions(-DNOMINMAX -D_CRT_SECURE_NO_WARNINGS)
+# Кроссплатформенные настройки
+if(MSVC)
+    # Windows settings
+    add_compile_options(/W4 /MP)
+    add_definitions(-DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DPARADOX_DSPIRIT_EXPORTS)
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+    # Linux/macOS settings
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    if(NOT APPLE)
+        add_compile_options(-Werror)
+    endif()
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Основная библиотека (ТОЛЬКО существующие файлы!)
+# Единые пути для всех платформ
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+# Main library
 add_library(paradox-dspirit
     src/dspirit.cpp
 )
 
-# Заголовочные файлы
+# Include directories
 target_include_directories(paradox-dspirit
     PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
-# Псевдоним для удобства
+# Alias
 add_library(paradox::dspirit ALIAS paradox-dspirit)
 
-# ПРОСТОЙ пример для начала
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/examples/basic_usage.cpp)
-    add_executable(example_basic examples/basic_usage.cpp)
-    target_link_libraries(example_basic paradox::dspirit)
-endif()
+# Test executable - ОДНО ИМЯ ДЛЯ ВСЕХ ПЛАТФОРМ
+add_executable(test_example examples/basic_usage.cpp)  # ← одно имя!
+target_link_libraries(test_example paradox::dspirit)
 
-# Простые тесты (добавим позже)
-option(BUILD_TESTS "Build tests" OFF)  # Сначала выключим
-
-if(BUILD_TESTS)
-    message(STATUS "Tests disabled for initial setup")
-endif()
-
-message(STATUS "Project configured successfully!")
-message(STATUS "Source files found:")
-file(GLOB_RECURSE SOURCES "src/*.cpp" "include/*.h")
-foreach(SOURCE ${SOURCES})
-    message(STATUS "  ${SOURCE}")
-endforeach()
+message(STATUS "========================================")
+message(STATUS "paradox-dspirit ${PROJECT_VERSION}")
+message(STATUS "Platform: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "========================================")
