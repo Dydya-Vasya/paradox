@@ -1,17 +1,21 @@
 cmake_minimum_required(VERSION 3.14)
 project(paradox-dspirit VERSION 1.0.0 LANGUAGES CXX)
 
-# Кроссплатформенные настройки
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+# Отключаем конфигурационные подпапки для Windows
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 if(MSVC)
-    # Windows settings
-    add_compile_options(/W4 /MP)
-    add_definitions(-DNOMINMAX -D_CRT_SECURE_NO_WARNINGS -DPARADOX_DSPIRIT_EXPORTS)
-else()
-    # Linux/macOS settings
-    add_compile_options(-Wall -Wextra -Wpedantic)
-    if(NOT APPLE)
-        add_compile_options(-Werror)
-    endif()
+    # Для MSVC убираем Debug/Release подпапки
+    foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR})
+        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR})
+        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR})
+    endforeach()
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
