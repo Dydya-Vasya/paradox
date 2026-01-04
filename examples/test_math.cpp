@@ -1,5 +1,5 @@
 // tests/test_math.cpp
-#include "../include/spirit_double.h"
+#include "dspirit.h"
 #include <iostream>
 #include <cassert>
 

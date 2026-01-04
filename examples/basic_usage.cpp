@@ -1,4 +1,4 @@
-#include <paradox/dspirit.h>
+#include <dspirit.h>
 #include <iostream>
 
 int main() {

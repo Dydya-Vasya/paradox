@@ -1,4 +1,4 @@
-#include "spirit_float.h"
+#include "dspirit.h"
 #include <iostream>
 #include <vector>
 #include <iomanip>
@@ -8,12 +8,12 @@ using namespace paradox;
 class ElectricalCircuit {
 public:
     // Закон Ома: I = U / R
-    static spirit calculateCurrent(const spirit& voltage, const spirit& resistance) {
+    static dspirit calculateCurrent(const dspirit& voltage, const dspirit& resistance) {
         std::cout << "Расчет тока по закону Ома:" << std::endl;
         std::cout << "  Напряжение U = " << voltage << " В" << std::endl;
         std::cout << "  Сопротивление R = " << resistance << " Ом" << std::endl;
         
-        spirit current = voltage / resistance;
+        dspirit current = voltage / resistance;
         
         std::cout << "  Ток I = U / R = " << current << " А" << std::endl;
         std::cout << std::endl;
@@ -22,8 +22,8 @@ public:
     }
     
     // Мощность: P = U² / R = I² * R = U * I
-    static spirit calculatePower(const spirit& voltage, const spirit& resistance) {
-        spirit power = (voltage * voltage) / resistance;
+    static dspirit calculatePower(const dspirit& voltage, const dspirit& resistance) {
+        dspirit power = (voltage * voltage) / resistance;
         
         std::cout << "Расчет мощности:" << std::endl;
         std::cout << "  P = U² / R = (" << voltage << ")² / " << resistance 
@@ -34,8 +34,8 @@ public:
     }
     
     // Сопротивление при параллельном соединении: 1/R = 1/R1 + 1/R2 + ...
-    static spirit parallelResistance(const std::vector<spirit>& resistances) {
-        spirit totalInverse = spirit::ZERO;
+    static dspirit parallelResistance(const std::vector<dspirit>& resistances) {
+        dspirit totalInverse = dspirit::ZERO;
         
         std::cout << "Параллельное соединение сопротивлений:" << std::endl;
         for (size_t i = 0; i < resistances.size(); ++i) {
@@ -45,11 +45,11 @@ public:
             } else {
                 // Если одно из сопротивлений равно нулю, общее сопротивление тоже ноль
                 std::cout << "  Обнаружено нулевое сопротивление!" << std::endl;
-                return spirit::ZERO;
+                return dspirit::ZERO;
             }
         }
         
-        spirit totalResistance = totalInverse.inverse();
+        dspirit totalResistance = totalInverse.inverse();
         std::cout << "  Общее сопротивление: R = " << totalResistance << " Ом" << std::endl;
         std::cout << std::endl;
         
@@ -60,8 +60,8 @@ public:
 class CapacitorCircuit {
 public:
     // Заряд конденсатора: Q = C * U
-    static spirit calculateCharge(const spirit& capacitance, const spirit& voltage) {
-        spirit charge = capacitance * voltage;
+    static dspirit calculateCharge(const dspirit& capacitance, const dspirit& voltage) {
+        dspirit charge = capacitance * voltage;
         
         std::cout << "Расчет заряда конденсатора:" << std::endl;
         std::cout << "  Ёмкость C = " << capacitance << " Ф" << std::endl;
@@ -73,8 +73,8 @@ public:
     }
     
     // Ток через конденсатор: I = C * dU/dt
-    static spirit calculateCurrent(const spirit& capacitance, const spirit& dU_dt) {
-        spirit current = capacitance * dU_dt;
+    static dspirit calculateCurrent(const dspirit& capacitance, const dspirit& dU_dt) {
+        dspirit current = capacitance * dU_dt;
         
         std::cout << "Ток через конденсатор:" << std::endl;
         std::cout << "  I = C * dU/dt = " << capacitance << " * " << dU_dt 
@@ -85,8 +85,8 @@ public:
     }
     
     // Энергия конденсатора: W = C * U² / 2
-    static spirit calculateEnergy(const spirit& capacitance, const spirit& voltage) {
-        spirit energy = (capacitance * voltage * voltage) / spirit(2.0);
+    static dspirit calculateEnergy(const dspirit& capacitance, const dspirit& voltage) {
+        dspirit energy = (capacitance * voltage * voltage) / dspirit(2.0);
         
         std::cout << "Энергия конденсатора:" << std::endl;
         std::cout << "  W = C * U² / 2 = " << capacitance << " * (" << voltage 
@@ -104,11 +104,11 @@ public:
         std::cout << "Сверхпроводник имеет нулевое сопротивление!" << std::endl;
         std::cout << std::endl;
         
-        spirit zeroResistance = spirit::ZERO;  // Сверхпроводник
-        spirit voltage(12.0);  // Напряжение 12 В
+        dspirit zeroResistance = dspirit::ZERO;  // Сверхпроводник
+        dspirit voltage(12.0);  // Напряжение 12 В
         
         std::cout << "Ситуация 1: Обычный источник напряжения" << std::endl;
-        spirit current1 = ElectricalCircuit::calculateCurrent(voltage, zeroResistance);
+        dspirit current1 = ElectricalCircuit::calculateCurrent(voltage, zeroResistance);
         
         if (current1.isInfinity()) {
             std::cout << "  ВЫВОД: Ток стремится к бесконечности!" << std::endl;
@@ -118,9 +118,9 @@ public:
         std::cout << std::endl;
         
         std::cout << "Ситуация 2: Идеальный источник тока" << std::endl;
-        spirit finiteCurrent(5.0);  // Источник тока 5 А
+        dspirit finiteCurrent(5.0);  // Источник тока 5 А
         // Напряжение на сверхпроводнике должно быть нулевым
-        spirit voltage2 = finiteCurrent * zeroResistance;
+        dspirit voltage2 = finiteCurrent * zeroResistance;
         std::cout << "  Если источник обеспечивает конечный ток I = " << finiteCurrent << " А," << std::endl;
         std::cout << "  то напряжение на сверхпроводнике U = I * R = " << finiteCurrent 
                   << " * " << zeroResistance << " = " << voltage2 << " В" << std::endl;
@@ -138,14 +138,14 @@ public:
         // Вероятность туннелирования: P ~ exp(-2 * k * L)
         // где k = sqrt(2m(V-E))/ħ
         
-        spirit barrierHeight = spirit::INF;  // Бесконечно высокий барьер
-        spirit electronEnergy(1.0);  // Энергия электрона 1 эВ
+        dspirit barrierHeight = dspirit::INF;  // Бесконечно высокий барьер
+        dspirit electronEnergy(1.0);  // Энергия электрона 1 эВ
         
         std::cout << "Высота барьера V = " << barrierHeight << std::endl;
         std::cout << "Энергия электрона E = " << electronEnergy << " эВ" << std::endl;
         
         // Для бесконечно высокого барьера (V → ∞) вероятность туннелирования → 0
-        spirit tunnelingProbability = exp(spirit::NEG_INF);  // exp(-∞) = 0
+        dspirit tunnelingProbability = exp(dspirit::NEG_INF);  // exp(-∞) = 0
         
         std::cout << "Вероятность туннелирования P = exp(-∞) = " << tunnelingProbability << std::endl;
         std::cout << "Вывод: Через бесконечно высокий барьер туннелирование невозможно!" << std::endl;
@@ -159,15 +159,15 @@ public:
         std::cout << "=== ОТНОСИТЕЛЬНОСТЬ: ДВИЖЕНИЕ СО СВЕТОВОЙ СКОРОСТЬЮ ===" << std::endl;
         std::cout << std::endl;
         
-        spirit c(299792458.0);  // Скорость света, м/с
-        spirit v = c;  // Скорость объекта равна скорости света
+        dspirit c(299792458.0);  // Скорость света, м/с
+        dspirit v = c;  // Скорость объекта равна скорости света
         
         std::cout << "Скорость света c = " << c << " м/с" << std::endl;
         std::cout << "Скорость объекта v = " << v << " м/с" << std::endl;
         
         // Релятивистский фактор: γ = 1 / sqrt(1 - v²/c²)
         // При v = c: 1 - v²/c² = 0
-        spirit gamma = spirit::ONE / sqrt(spirit::ONE - (v * v) / (c * c));
+        dspirit gamma = dspirit::ONE / sqrt(dspirit::ONE - (v * v) / (c * c));
         
         std::cout << "Релятивистский фактор γ = 1 / sqrt(1 - v²/c²)" << std::endl;
         std::cout << "При v = c: γ = " << gamma << std::endl;
@@ -190,8 +190,8 @@ public:
         
         // Предел sin(x)/x при x → 0
         std::cout << "1. Предел sin(x)/x при x → 0:" << std::endl;
-        spirit x1 = spirit::ZERO;
-        spirit limit1 = sin(x1) / x1;
+        dspirit x1 = dspirit::ZERO;
+        dspirit limit1 = sin(x1) / x1;
         std::cout << "   lim(x→0) sin(x)/x = " << limit1 << std::endl;
         std::cout << "   Известный результат: 1" << std::endl;
         std::cout << std::endl;
@@ -199,7 +199,7 @@ public:
         
         // Интеграл от 0 до ∞: ∫e^(-x) dx
         std::cout << "3. Интеграл от 0 до ∞: ∫e^(-x) dx" << std::endl;
-        spirit integral = -exp(spirit::NEG_INF) + exp(spirit::ZERO);
+        dspirit integral = -exp(dspirit::NEG_INF) + exp(dspirit::ZERO);
         std::cout << "   ∫[0,∞] e^(-x) dx = [-e^(-x)]₀^∞ = " << integral << std::endl;
         std::cout << "   Известный результат: 1" << std::endl;
         std::cout << std::endl;
@@ -209,7 +209,7 @@ public:
 int main() {
     std::cout << std::fixed << std::setprecision(6);
     std::cout << "========================================" << std::endl;
-    std::cout << "  ФИЗИЧЕСКИЕ ПРИМЕРЫ С БИБЛИОТЕКОЙ SPIRIT" << std::endl;
+    std::cout << "  ФИЗИЧЕСКИЕ ПРИМЕРЫ С БИБЛИОТЕКОЙ dspirit" << std::endl;
     std::cout << "========================================" << std::endl;
     std::cout << std::endl;
     
@@ -219,13 +219,13 @@ int main() {
         std::cout << "====================" << std::endl;
         
         // Обычный резистор
-        ElectricalCircuit::calculateCurrent(spirit(12.0), spirit(4.0));
+        ElectricalCircuit::calculateCurrent(dspirit(12.0), dspirit(4.0));
         
         // Сверхпроводник (нулевое сопротивление)
-        ElectricalCircuit::calculateCurrent(spirit(12.0), spirit::ZERO);
+        ElectricalCircuit::calculateCurrent(dspirit(12.0), dspirit::ZERO);
         
         // Бесконечное сопротивление (разрыв цепи)
-        ElectricalCircuit::calculateCurrent(spirit(12.0), spirit::INF);
+        ElectricalCircuit::calculateCurrent(dspirit(12.0), dspirit::INF);
         
         // Пример 2: Сверхпроводник
         SuperconductorExperiment::run();
@@ -242,29 +242,29 @@ int main() {
         // Пример 6: Параллельное соединение
         std::cout << "ПРИМЕР 6: ПАРАЛЛЕЛЬНОЕ СОЕДИНЕНИЕ" << std::endl;
         std::cout << "================================" << std::endl;
-        std::vector<spirit> resistors = {spirit(100.0), spirit(200.0), spirit(300.0)};
-        spirit parallelR = ElectricalCircuit::parallelResistance(resistors);
+        std::vector<dspirit> resistors = {dspirit(100.0), dspirit(200.0), dspirit(300.0)};
+        dspirit parallelR = ElectricalCircuit::parallelResistance(resistors);
         std::cout << "При напряжении 24 В ток будет: ";
-        spirit currentParallel = ElectricalCircuit::calculateCurrent(spirit(24.0), parallelR);
+        dspirit currentParallel = ElectricalCircuit::calculateCurrent(dspirit(24.0), parallelR);
         
         // Пример 7: Конденсаторы
         std::cout << "ПРИМЕР 7: КОНДЕНСАТОРЫ" << std::endl;
         std::cout << "======================" << std::endl;
         
-        CapacitorCircuit::calculateCharge(spirit(0.0001), spirit(100.0));  // 100 мкФ, 100 В
-        CapacitorCircuit::calculateCurrent(spirit(0.0001), spirit(1000.0));  // dU/dt = 1000 В/с
-        CapacitorCircuit::calculateEnergy(spirit(0.0001), spirit(100.0));
+        CapacitorCircuit::calculateCharge(dspirit(0.0001), dspirit(100.0));  // 100 мкФ, 100 В
+        CapacitorCircuit::calculateCurrent(dspirit(0.0001), dspirit(1000.0));  // dU/dt = 1000 В/с
+        CapacitorCircuit::calculateEnergy(dspirit(0.0001), dspirit(100.0));
         
         // Пример 8: Короткое замыкание
         std::cout << "ПРИМЕР 8: КОРОТКОЕ ЗАМЫКАНИЕ" << std::endl;
         std::cout << "============================" << std::endl;
         
-        spirit shortCircuitResistance = spirit::EPSILON;  // Очень маленькое сопротивление
-        spirit batteryVoltage(1.5);  // Батарейка 1.5 В
+        dspirit shortCircuitResistance = dspirit::EPSILON;  // Очень маленькое сопротивление
+        dspirit batteryVoltage(1.5);  // Батарейка 1.5 В
         
         std::cout << "Короткое замыкание батарейки:" << std::endl;
-        spirit shortCircuitCurrent = batteryVoltage / shortCircuitResistance;
-        spirit shortCircuitPower = ElectricalCircuit::calculatePower(batteryVoltage, shortCircuitResistance);
+        dspirit shortCircuitCurrent = batteryVoltage / shortCircuitResistance;
+        dspirit shortCircuitPower = ElectricalCircuit::calculatePower(batteryVoltage, shortCircuitResistance);
         
         std::cout << "  Ток короткого замыкания: " << shortCircuitCurrent << " А" << std::endl;
         std::cout << "  Мощность: " << shortCircuitPower << " Вт" << std::endl;
@@ -276,8 +276,8 @@ int main() {
         std::cout << "ПРИМЕР 9: ПРЕДЕЛЫ В ЭЛЕКТРОТЕХНИКЕ" << std::endl;
         std::cout << "==================================" << std::endl;
         
-        spirit R1(10.0);
-        spirit R2(20.0);
+        dspirit R1(10.0);
+        dspirit R2(20.0);
         
         // Последовательное соединение
         std::cout << "Последовательное соединение R1 и R2:" << std::endl;
@@ -285,13 +285,13 @@ int main() {
         
         // Параллельное соединение
         std::cout << "Параллельное соединение R1 и R2:" << std::endl;
-        spirit R_par = spirit::ONE / (R1.inverse() + R2.inverse());
+        dspirit R_par = dspirit::ONE / (R1.inverse() + R2.inverse());
         std::cout << "  R_пар = 1/(1/R1 + 1/R2) = " << R_par << " Ом" << std::endl;
         
         // Что происходит, когда R1 → 0?
         std::cout << "\nИсследование предела при R1 → 0:" << std::endl;
-        spirit R1_small = spirit::EPSILON;  // Очень маленькое сопротивление
-        spirit R_par_small = spirit::ONE / (R1_small.inverse() + R2.inverse());
+        dspirit R1_small = dspirit::EPSILON;  // Очень маленькое сопротивление
+        dspirit R_par_small = dspirit::ONE / (R1_small.inverse() + R2.inverse());
         std::cout << "  Если R1 = " << R1_small << " Ом, то R_пар ≈ " << R_par_small << " Ом" << std::endl;
         std::cout << "  Вывод: При R1 → 0, общее сопротивление также → 0" << std::endl;
         

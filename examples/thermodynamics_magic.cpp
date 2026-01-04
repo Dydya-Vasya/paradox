@@ -1,4 +1,4 @@
-#include "spirit_float.h"
+#include "dspirit.h"
 #include <iostream>
 #include <iomanip>
 #include <cmath>
@@ -11,15 +11,15 @@ public:
         std::cout << "=== THERMODYNAMICS: ABSOLUTE ZERO ===" << std::endl;
         std::cout << std::endl;
         
-        spirit T = spirit::ZERO;          // Absolute zero temperature
-        spirit k = spirit(1.380649e-23);  // Boltzmann constant
+        dspirit T = dspirit::ZERO;          // Absolute zero temperature
+        dspirit k = dspirit(1.380649e-23);  // Boltzmann constant
         
         std::cout << "Temperature T = " << T << " K" << std::endl;
         std::cout << "Boltzmann constant k = " << k << " J/K" << std::endl;
         std::cout << std::endl;
         
         // Average kinetic energy of ideal gas molecule
-        spirit E_avg = (spirit(3.0) / spirit(2.0)) * k * T;
+        dspirit E_avg = (dspirit(3.0) / dspirit(2.0)) * k * T;
         std::cout << "Average kinetic energy of molecule:" << std::endl;
         std::cout << "  ⟨E⟩ = (3/2) * k * T = " << E_avg << " J" << std::endl;
         
@@ -29,7 +29,7 @@ public:
         std::cout << std::endl;
         
         // Entropy at absolute zero (third law of thermodynamics)
-        spirit S = spirit::ZERO;
+        dspirit S = dspirit::ZERO;
         std::cout << "Entropy at T = 0:" << std::endl;
         std::cout << "  S = " << S << " J/K" << std::endl;
         std::cout << "  This is the third law of thermodynamics: S → 0 as T → 0." << std::endl;
@@ -37,17 +37,17 @@ public:
         
         // Heat capacity at absolute zero
         // For many systems C → 0 as T → 0
-        spirit C_v = spirit::ZERO;
+        dspirit C_v = dspirit::ZERO;
         std::cout << "Heat capacity at T = 0:" << std::endl;
         std::cout << "  C_v = " << C_v << " J/(kg·K)" << std::endl;
         std::cout << std::endl;
         
         // Boltzmann distribution at T → 0
-        spirit E1 = spirit(1.0e-20);  // Energy level 1
-        spirit E2 = spirit(2.0e-20);  // Energy level 2
+        dspirit E1 = dspirit(1.0e-20);  // Energy level 1
+        dspirit E2 = dspirit(2.0e-20);  // Energy level 2
         
-        spirit p1 = exp(-E1 / (k * T));
-        spirit p2 = exp(-E2 / (k * T));
+        dspirit p1 = exp(-E1 / (k * T));
+        dspirit p2 = exp(-E2 / (k * T));
         
         std::cout << "Boltzmann distribution at T → 0:" << std::endl;
         std::cout << "  Occupancy probability of level 1: p1 = exp(-E1/kT) = " << p1 << std::endl;
@@ -55,15 +55,15 @@ public:
         
         // At T = 0, exp(-E/kT) = exp(-∞) = 0 for E > 0
         // But for ground state (E = 0) probability should be 1
-        spirit E0 = spirit::ZERO;
-        spirit p0 = exp(-E0 / (k * T));  // exp(0/0) - uncertainty!
+        dspirit E0 = dspirit::ZERO;
+        dspirit p0 = exp(-E0 / (k * T));  // exp(0/0) - uncertainty!
         
         std::cout << "  Occupancy probability of ground state (E=0):" << std::endl;
         std::cout << "    p0 = exp(-0/0) = " << p0 << " (uncertainty 0/0)" << std::endl;
         
         std::cout << std::endl;
         std::cout << "LEVEL MAGIC:" << std::endl;
-        std::cout << "The spirit library allows working with expressions like 0/0" << std::endl;
+        std::cout << "The dspirit library allows working with expressions like 0/0" << std::endl;
         std::cout << "and exp(-∞), obtaining physically meaningful results." << std::endl;
         std::cout << std::endl;
     }
@@ -72,15 +72,15 @@ public:
         std::cout << "=== THERMODYNAMICS: INFINITE TEMPERATURE ===" << std::endl;
         std::cout << std::endl;
         
-        spirit T = spirit::INF;           // Infinite temperature
-        spirit k = spirit(1.380649e-23);  // Boltzmann constant
+        dspirit T = dspirit::INF;           // Infinite temperature
+        dspirit k = dspirit(1.380649e-23);  // Boltzmann constant
         
         std::cout << "Temperature T = " << T << " K" << std::endl;
         std::cout << "Boltzmann constant k = " << k << " J/K" << std::endl;
         std::cout << std::endl;
         
         // Average kinetic energy
-        spirit E_avg = (spirit(3.0) / spirit(2.0)) * k * T;
+        dspirit E_avg = (dspirit(3.0) / dspirit(2.0)) * k * T;
         std::cout << "Average kinetic energy:" << std::endl;
         std::cout << "  ⟨E⟩ = (3/2) * k * T = " << E_avg << " J" << std::endl;
         
@@ -90,11 +90,11 @@ public:
         std::cout << std::endl;
         
         // Boltzmann distribution at T → ∞
-        spirit E1 = spirit(1.0);  // Energy level 1
-        spirit E2 = spirit(2.0);  // Energy level 2
+        dspirit E1 = dspirit(1.0);  // Energy level 1
+        dspirit E2 = dspirit(2.0);  // Energy level 2
         
-        spirit p1 = exp(-E1 / (k * T));
-        spirit p2 = exp(-E2 / (k * T));
+        dspirit p1 = exp(-E1 / (k * T));
+        dspirit p2 = exp(-E2 / (k * T));
         
         std::cout << "Boltzmann distribution at T → ∞:" << std::endl;
         std::cout << "  p1 = exp(-E1/kT) = exp(-" << E1 << "/(" << k << "*" << T << "))" << std::endl;
@@ -107,8 +107,8 @@ public:
         
         // Entropy at T → ∞
         // For system with N levels, S = k * ln(N) for uniform distribution
-        spirit N = spirit(1000.0);  // Number of levels
-        spirit S = k * log(N);
+        dspirit N = dspirit(1000.0);  // Number of levels
+        dspirit S = k * log(N);
         
         std::cout << "Entropy at T → ∞:" << std::endl;
         std::cout << "  For system with N = " << N << " levels:" << std::endl;
@@ -122,8 +122,8 @@ public:
         std::cout << std::endl;
         
         // Carnot cycle with infinite heater temperature
-        spirit T_hot = spirit::INF;  // Heater temperature
-        spirit T_cold = spirit(300.0);  // Refrigerator temperature
+        dspirit T_hot = dspirit::INF;  // Heater temperature
+        dspirit T_cold = dspirit(300.0);  // Refrigerator temperature
         
         std::cout << "Carnot cycle parameters:" << std::endl;
         std::cout << "  Heater temperature T_h = " << T_hot << " K" << std::endl;
@@ -131,19 +131,19 @@ public:
         std::cout << std::endl;
         
         // Carnot efficiency: η = 1 - T_c / T_h
-        spirit eta = spirit::ONE - T_cold / T_hot;
+        dspirit eta = dspirit::ONE - T_cold / T_hot;
         std::cout << "Carnot efficiency η = 1 - T_c / T_h:" << std::endl;
         std::cout << "  η = 1 - " << T_cold << " / " << T_hot << std::endl;
         std::cout << "  η = " << eta << std::endl;
         
-        if (eta == spirit::ONE) {
+        if (eta == dspirit::ONE) {
             std::cout << "  Efficiency is 100% at infinite heater temperature!" << std::endl;
         }
         std::cout << std::endl;
         
         // Work per cycle
-        spirit Q_h = spirit(1000.0);  // Heat from heater
-        spirit W = eta * Q_h;         // Useful work
+        dspirit Q_h = dspirit(1000.0);  // Heat from heater
+        dspirit W = eta * Q_h;         // Useful work
         
         std::cout << "Work per cycle:" << std::endl;
         std::cout << "  Heat from heater Q_h = " << Q_h << " J" << std::endl;
@@ -155,7 +155,7 @@ public:
         std::cout << std::endl;
         
         // Heat given to refrigerator
-        spirit Q_c = Q_h - W;
+        dspirit Q_c = Q_h - W;
         std::cout << "Heat to refrigerator Q_c = Q_h - W:" << std::endl;
         std::cout << "  Q_c = " << Q_h << " - " << W << " = " << Q_c << " J" << std::endl;
         
@@ -182,9 +182,9 @@ public:
         // Below critical temperature, macroscopic number of particles
         // occupies ground state (energy E = 0)
         
-        spirit T = spirit::ZERO;          // Absolute zero
-        spirit mu = spirit::ZERO;         // Chemical potential (for bosons at T=0, μ=0)
-        spirit k = spirit(1.380649e-23);  // Boltzmann constant
+        dspirit T = dspirit::ZERO;          // Absolute zero
+        dspirit mu = dspirit::ZERO;         // Chemical potential (for bosons at T=0, μ=0)
+        dspirit k = dspirit(1.380649e-23);  // Boltzmann constant
         
         std::cout << "Condensate parameters:" << std::endl;
         std::cout << "  Temperature T = " << T << " K" << std::endl;
@@ -195,9 +195,9 @@ public:
         // For ground state (E=0) at T=0 and μ=0:
         // f(0) = 1 / (exp(0/0) - 1) - uncertainty!
         
-        spirit E = spirit::ZERO;
-        spirit exponent = exp((E - mu) / (k * T));
-        spirit f_BE = spirit::ONE / (exponent - spirit::ONE);
+        dspirit E = dspirit::ZERO;
+        dspirit exponent = exp((E - mu) / (k * T));
+        dspirit f_BE = dspirit::ONE / (exponent - dspirit::ONE);
         
         std::cout << "Bose-Einstein distribution for ground state:" << std::endl;
         std::cout << "  f(0) = 1 / (exp((0-0)/(k*0)) - 1)" << std::endl;
@@ -211,8 +211,8 @@ public:
         std::cout << std::endl;
         
         // For excited states (E > 0) at T=0:
-        spirit E_excited = spirit(1.0e-23);  // Small but positive energy
-        spirit f_excited = spirit::ONE / (exp((E_excited - mu) / (k * T)) - spirit::ONE);
+        dspirit E_excited = dspirit(1.0e-23);  // Small but positive energy
+        dspirit f_excited = dspirit::ONE / (exp((E_excited - mu) / (k * T)) - dspirit::ONE);
         
         std::cout << "Distribution for excited state:" << std::endl;
         std::cout << "  E = " << E_excited << " J" << std::endl;
@@ -224,16 +224,16 @@ public:
         std::cout << std::endl;
         
         // Critical temperature for ideal Bose gas
-        spirit h = spirit(6.62607015e-34);    // Planck's constant
-        spirit m = spirit(6.6464764e-27);     // Mass of helium-4 atom
-        spirit n = spirit(2.5e28);            // Particle concentration
+        dspirit h = dspirit(6.62607015e-34);    // Planck's constant
+        dspirit m = dspirit(6.6464764e-27);     // Mass of helium-4 atom
+        dspirit n = dspirit(2.5e28);            // Particle concentration
         
         // Formula: T_c = (2πħ²/mk) * (n/ζ(3/2))^(2/3)
-        spirit hbar = h / (spirit(2.0) * spirit(3.1415926535));
-        spirit zeta_3_2 = spirit(2.612);      // Riemann zeta function ζ(3/2)
+        dspirit hbar = h / (dspirit(2.0) * dspirit(3.1415926535));
+        dspirit zeta_3_2 = dspirit(2.612);      // Riemann zeta function ζ(3/2)
         
-        spirit T_c = (spirit(2.0) * spirit(3.1415926535) * hbar * hbar / (m * k)) 
-                     * pow(n / zeta_3_2, static_cast<float>(spirit(2.0)) / static_cast<float>(spirit(3.0)));
+        dspirit T_c = (dspirit(2.0) * dspirit(3.1415926535) * hbar * hbar / (m * k)) 
+                     * pow(n / zeta_3_2, static_cast<float>(dspirit(2.0)) / static_cast<float>(dspirit(3.0)));
         
         std::cout << "Critical temperature of Bose-Einstein condensate:" << std::endl;
         std::cout << "  Concentration n = " << n << " m⁻³" << std::endl;
@@ -242,8 +242,8 @@ public:
         std::cout << std::endl;
         
         // Fraction of particles in condensate at T < T_c
-        spirit T_actual = spirit(0.5) * T_c;  // Temperature below critical
-        spirit N0_N = spirit::ONE - pow(T_actual / T_c, static_cast<float>(spirit(3.0)) / static_cast<float>(spirit(2.0)));
+        dspirit T_actual = dspirit(0.5) * T_c;  // Temperature below critical
+        dspirit N0_N = dspirit::ONE - pow(T_actual / T_c, static_cast<float>(dspirit(3.0)) / static_cast<float>(dspirit(2.0)));
         
         std::cout << "Fraction of particles in condensate at T = " << T_actual << " K:" << std::endl;
         std::cout << "  N0/N = 1 - (T/T_c)^(3/2) = " << N0_N << std::endl;
