@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        config: [Debug, Release]
+        config: [Release]  # Только Release для начала
     
     steps:
     - uses: actions/checkout@v3
@@ -21,13 +21,25 @@ jobs:
     - name: Run Test (Windows)
       run: |
         cd build
-        .\${{ matrix.config }}\test_example.exe || echo "Test skipped for Debug build"
+        # Пробуем несколько возможных путей
+        if (Test-Path "${{ matrix.config }}/test_example.exe") {
+          .\${{ matrix.config }}\test_example.exe
+        } elseif (Test-Path "test_example.exe") {
+          .\test_example.exe
+        } elseif (Test-Path "bin/${{ matrix.config }}/test_example.exe") {
+          .\bin\${{ matrix.config }}\test_example.exe
+        } else {
+          Write-Host "Test executable not found. Available files:" -ForegroundColor Yellow
+          Get-ChildItem -Recurse -Filter "*.exe"
+          exit 1
+        }
+      shell: pwsh
 
   build-linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        config: [Release]  # Только Release для Linux сначала
+        config: [Release]
     
     steps:
     - uses: actions/checkout@v3
@@ -46,7 +58,8 @@ jobs:
     - name: Run Test (Linux)
       run: |
         cd build
-        ./test_example || echo "Test completed"
+        ./test_example
+        echo "✅ Linux test passed"
 
   build-macos:
     runs-on: macos-latest
@@ -66,4 +79,5 @@ jobs:
     - name: Run Test (macOS)
       run: |
         cd build
-        ./test_example || echo "Test completed"
+        ./test_example
+        echo "✅ macOS test passed"
