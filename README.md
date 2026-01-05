@@ -3,7 +3,7 @@
 [![CMake](https://github.com/Dydya-Vasya/paradox/actions/workflows/ci.yml/badge.svg)](https://github.com/Dydya-Vasya/paradox/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![C++17](https://img.shields.io/badge/C++-17-blue.svg)](https://en.cppreference.com/w/cpp/17)
-[![DOI](https://sci-article.ru/stat.php?i=1578843091)]
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18146406.svg)](https://doi.org/10.5281/zenodo.18146406)
 
 > **From Academic Research to Production-Ready Library**  
 > Based on peer-reviewed publication (2020) | Industry applications in finance, science, and ML
