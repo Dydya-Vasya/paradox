@@ -104,6 +104,8 @@ public:
     static const dspirit ONE;
     static const dspirit NEG_ONE;
     static const dspirit EPSILON;
+    static const dspirit SUPER_ZERO;
+    static const dspirit SUPER_INF;
     
     // Математические функции
     friend dspirit sqrt(const dspirit& x);

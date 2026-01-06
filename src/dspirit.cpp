@@ -23,8 +23,8 @@ private:
     double level_;  // Уровень старшего числа
     
     static const double epsilon;
-    static const double POS_INF;
-    static const double NEG_INF;
+    static const double DOUBLE_POS_INF;
+    static const double DOUBLE_NEG_INF;
 
     static const double NEAR_ZERO;
     
@@ -96,7 +96,7 @@ public:
                 r_ = 1.0;  // Устанавливаем r_ в 1 для нуля
                 i_ = 0.0;
                 j_ = 0.0;
-                level_ -= 1.0;  // Уровень на 1 ниже текущего
+                level_ = DOUBLE_NEG_INF;  // суперноль
             }
             return;
         }
@@ -145,14 +145,14 @@ public:
         if (isApproxEqualLevel(level_, other.level_)) {
             Impl result;
             result.r_ = r_ + other.r_;
-            if(result.r_ == POS_INF) return {1.0, level_ + 1};
-            if(result.r_ == NEG_INF) return {-1.0, level_ + 1};
+            if(result.r_ == DOUBLE_POS_INF) return {1.0, level_ + 1};
+            if(result.r_ == DOUBLE_NEG_INF) return {-1.0, level_ + 1};
             result.i_ = i_ + other.i_;
-            if(result.i_ == POS_INF) return {result.r_, 1.0, 0.0, level_};
-            if(result.i_ == NEG_INF) return {result.r_, -1.0, 0.0, level_};
+            if(result.i_ == DOUBLE_POS_INF) return {result.r_, 1.0, 0.0, level_};
+            if(result.i_ == DOUBLE_NEG_INF) return {result.r_, -1.0, 0.0, level_};
             result.j_ = j_ + other.j_;
-            if(result.j_ == POS_INF) return {result.r_, result.i_, 1.0, level_};
-            if(result.j_ == NEG_INF) return {result.r_, result.i_, -1.0, level_};
+            if(result.j_ == DOUBLE_POS_INF) return {result.r_, result.i_, 1.0, level_};
+            if(result.j_ == DOUBLE_NEG_INF) return {result.r_, result.i_, -1.0, level_};
             result.level_ = level_;
             result.normalize();
             return result;
@@ -169,14 +169,14 @@ public:
         
         // Суммируем значения на каждом уровне
         const double sum_r = atLevel(max_level) + other.atLevel(max_level);
-        if(sum_r == POS_INF) return {1.0, max_level + 1};
-        if(sum_r == NEG_INF) return {-1.0, max_level + 1};
+        if(sum_r == DOUBLE_POS_INF) return {1.0, max_level + 1};
+        if(sum_r == DOUBLE_NEG_INF) return {-1.0, max_level + 1};
         const double sum_i = atLevel(max_level - 1.0) + other.atLevel(max_level - 1.0);
-        if(sum_i == POS_INF) return {sum_r, 1.0, 0.0, max_level};
-        if(sum_i == NEG_INF) return {sum_r, -1.0, 0.0, max_level};
+        if(sum_i == DOUBLE_POS_INF) return {sum_r, 1.0, 0.0, max_level};
+        if(sum_i == DOUBLE_NEG_INF) return {sum_r, -1.0, 0.0, max_level};
         const double sum_j = atLevel(max_level - 2.0) + other.atLevel(max_level - 2.0);
-        if(sum_j == POS_INF) return {sum_r, sum_i, 1.0, max_level};
-        if(sum_j == NEG_INF) return {sum_r, sum_i, -1.0, max_level};
+        if(sum_j == DOUBLE_POS_INF) return {sum_r, sum_i, 1.0, max_level};
+        if(sum_j == DOUBLE_NEG_INF) return {sum_r, sum_i, -1.0, max_level};
         Impl result(sum_r, sum_i, sum_j, max_level);
         result.normalize();
         return result;
@@ -187,21 +187,40 @@ public:
     }
     
     Impl multiply(const Impl& other) const {
+        if(other.level_ == DOUBLE_NEG_INF){
+            if(level_ == DOUBLE_POS_INF) return {1.0, 0.0};
+            return {1.0, DOUBLE_NEG_INF};
+        }
+
+        if(other.level_ == DOUBLE_POS_INF){
+            if(level_ == DOUBLE_NEG_INF) return {1.0, 0.0};
+            return {1.0, DOUBLE_POS_INF};
+        }
+
+        if(level_ == DOUBLE_NEG_INF){
+            if(other.level_ == DOUBLE_POS_INF) return {1.0, 0.0};
+            return {1.0, DOUBLE_NEG_INF};
+        }
+
+        if(level_ == DOUBLE_POS_INF){
+            if(other.level_ == DOUBLE_NEG_INF) return {1.0, 0.0};
+            return {1.0, DOUBLE_POS_INF};
+        }
         // Умножение: уровни складываются
         const double result_level = level_ + other.level_;
     
         const double result_r = r_ * other.r_;
         // если переполнение то увеличиваем уровень и отправляем еденицу
-        if(result_r == POS_INF) return {1.0, result_level + 1};
-        if(result_r == NEG_INF) return {-1.0, result_level + 1};
+        if(result_r == DOUBLE_POS_INF) return {1.0, result_level + 1};
+        if(result_r == DOUBLE_NEG_INF) return {-1.0, result_level + 1};
 
         const double result_i = r_ * other.i_ + i_ * other.r_;
-        if(result_i == POS_INF) return {result_r, 1.0, 0.0, result_level};
-        if(result_i == NEG_INF) return {result_r, -1.0, 0.0, result_level};
+        if(result_i == DOUBLE_POS_INF) return {result_r, 1.0, 0.0, result_level};
+        if(result_i == DOUBLE_NEG_INF) return {result_r, -1.0, 0.0, result_level};
         
         const double result_j = r_ * other.j_ + i_ * other.i_ + j_ * other.r_;
-        if(result_i == POS_INF) return {result_r, result_i, 1.0, result_level};
-        if(result_i == NEG_INF) return {result_r, result_i, -1.0, result_level};
+        if(result_i == DOUBLE_POS_INF) return {result_r, result_i, 1.0, result_level};
+        if(result_i == DOUBLE_NEG_INF) return {result_r, result_i, -1.0, result_level};
         
         Impl result(result_r, result_i, result_j, result_level);
         result.normalize();
@@ -209,19 +228,39 @@ public:
     }
     
     Impl divide(const Impl& divisor) const {
+        if(divisor.level_ == DOUBLE_NEG_INF){
+            if(level_ == DOUBLE_NEG_INF) return {1.0, 0.0};
+            return {1.0, DOUBLE_POS_INF};
+        }
+
+        if(divisor.level_ == DOUBLE_POS_INF){
+            if(level_ == DOUBLE_POS_INF) return {1.0, 0.0};
+            return {1.0, DOUBLE_NEG_INF};
+        }
+
+        if(level_ == DOUBLE_NEG_INF){
+            if(divisor.level_ == DOUBLE_NEG_INF) return {1.0, 0.0};
+            return {1.0, DOUBLE_NEG_INF};
+        }
+
+        if(level_ == DOUBLE_POS_INF){
+            if(divisor.level_ == DOUBLE_POS_INF) return {1.0, 0.0};
+            return {1.0, DOUBLE_POS_INF};
+        }
+
         const double result_level = level_ - divisor.level_;
         
         const double result_r = r_ / divisor.r_;
-        if(result_r == POS_INF) return {1.0, result_level + 1};
-        if(result_r == NEG_INF) return {-1.0, result_level + 1};
+        if(result_r == DOUBLE_POS_INF) return {1.0, result_level + 1};
+        if(result_r == DOUBLE_NEG_INF) return {-1.0, result_level + 1};
        
         const double result_i = (i_ - result_r * divisor.i_) /  divisor.r_;
-        if(result_i == POS_INF) return {result_r, 1.0, 0.0, result_level};
-        if(result_i == NEG_INF) return {result_r, -1.0, 0.0, result_level};
+        if(result_i == DOUBLE_POS_INF) return {result_r, 1.0, 0.0, result_level};
+        if(result_i == DOUBLE_NEG_INF) return {result_r, -1.0, 0.0, result_level};
        
         const double result_j = ((j_ - result_r * divisor.j_) - result_i * divisor.i_) / divisor.r_;
-        if(result_j == POS_INF) return {result_r, result_i, 1.0, result_level};
-        if(result_j == NEG_INF) return {result_r, result_i, -1.0, result_level};
+        if(result_j == DOUBLE_POS_INF) return {result_r, result_i, 1.0, result_level};
+        if(result_j == DOUBLE_NEG_INF) return {result_r, result_i, -1.0, result_level};
         
         Impl result(result_r, result_i, result_j, result_level);
         result.normalize();
@@ -323,8 +362,8 @@ public:
 
 // Инициализация статической константы
 const double dspirit::Impl::epsilon = std::numeric_limits<double>::epsilon() * 10;
-const double dspirit::Impl::POS_INF = std::numeric_limits<double>::infinity();
-const double dspirit::Impl::NEG_INF = -dspirit::Impl::POS_INF;
+const double dspirit::Impl::DOUBLE_POS_INF = std::numeric_limits<double>::infinity();
+const double dspirit::Impl::DOUBLE_NEG_INF = -dspirit::Impl::DOUBLE_POS_INF;
 
 const double dspirit::Impl::NEAR_ZERO = std::numeric_limits<double>::min() * 100.0;
 
@@ -518,6 +557,9 @@ const dspirit dspirit::NEG_INF(new Impl(-1.0, 1.0));
 const dspirit dspirit::ONE(1.0);
 const dspirit dspirit::NEG_ONE(-1.0);
 const dspirit dspirit::EPSILON(new Impl(1.0, -1.0));
+const dspirit dspirit::SUPER_ZERO(new Impl(1.0, DOUBLE_NEG_INF));
+const dspirit dspirit::SUPER_INF(new Impl(1.0, DOUBLE_POS_INF));
+
 
 // Операторы ввода/вывода
 std::ostream& operator<<(std::ostream& os, const dspirit& num) {
